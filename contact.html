@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Us | PMCO</title>
+  <meta name="description" content="Get in touch with Precision Manufacturing Co. (PMCO) for global sourcing, export services, and industrial manufacturing solutions from Goa, India." />
+  <meta name="keywords" content="contact PM CO, export services India, global sourcing, MSME support, industrial manufacturing" />
+  <meta name="author" content="PMCO Team" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- 🔥 reCAPTCHA SCRIPT REMOVED -->
+</head>
+<body class="page-body">
+
+<!-- Header -->
+<header>
+  <div class="header-container">
+    <a href="index.html" class="logo">
+      <img src="images/pmco-logo.png" alt="PMCO Logo" />
+      <span>PMCO</span>
+    </a>
+
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="services.html">Services</a>
+      <a href="products.html">Products</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+
+    <div class="hamburger" id="hamburger">&#9776;</div>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="container">
+    <h1>Contact Us</h1>
+
+    <!-- Contact Info -->
+    <div class="contact-info">
+      <div class="info-item">
+        <i class="fas fa-envelope"></i>
+        <div>
+          <strong>Email</strong>
+          <p>info@pmco.com</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-phone"></i>
+        <div>
+          <strong>Phone</strong>
+          <p>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-map-marker-alt"></i>
+        <div>
+          <strong>Location</strong>
+          <p>Industrial Area, Goa, India</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-wrapper">
+      <h2>Let’s get to know you better</h2>
+      <form class="contact-form" id="contactForm">
+        <input type="text" name="name" placeholder="Enter your name" required />
+        <input type="email" name="email" placeholder="Your email" required />
+        <input type="tel" name="phone" placeholder="Enter your phone number" required />
+        <select name="interest" required>
+          <option value="">Area of Interest</option>
+          <option value="machinery">Machinery</option>
+          <option value="export">Export Services</option>
+          <option value="sourcing">Sourcing</option>
+          <option value="other">Other</option>
+        </select>
+        <textarea name="message" placeholder="Message" rows="5" required></textarea>
+
+        <div class="button-wrapper">
+          <button type="submit" class="btn-consultation">
+            Book Consultation
+            <span class="arrow-circle">→</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <div class="footer-logo">PMCO</div>
+        <p>Empowering MSMEs. Enabling Global Buyers.</p>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+      <div class="footer-column">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="products.html">Products</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-column">
+        <h4>Contact Info</h4>
+        <p><i class="fas fa-map-marker-alt"></i> Industrial Area, Goa, India</p>
+        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+        <p><i class="fas fa-envelope"></i> info@pmco.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 PMCO. All Rights Reserved.</p>
+      <div class="footer-links">
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+  <!-- Back to Top Button -->
+  <button id="backToTop" title="Go to top">↑</button>
+</footer>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+  const data = Object.fromEntries(formData);
+
+  if (!/^\S+@\S+\.\S+$/.test(data.email)) {
+    showToast("Please enter a valid email address.");
+    return;
+  }
+
+  const cleanPhone = data.phone.replace(/\D/g, '');
+  if (cleanPhone.length < 10 || cleanPhone.length > 15) {
+    showToast("Please enter a valid phone number (10–15 digits).");
+    return;
+  }
+
+  const submitBtn = this.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<span class="spinner">⏳</span> Sending...';
+  submitBtn.disabled = true;
+
+  try {
+    // 🔥 NO reCAPTCHA — send data directly
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data) // No 'g-recaptcha-response'
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      showToast(result.message);
+      this.reset();
+    } else {
+      showToast(result.error || "Submission failed. Please try again.");
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    showToast("Network error. Please check your connection.");
+  } finally {
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }
+});
+
+function showToast(message) {
+  const existingToast = document.querySelector('.pmco-toast');
+  if (existingToast) existingToast.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'pmco-toast';
+  toast.innerHTML = `<i class="fas fa-check-circle"></i> <span>${message}</span>`;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .pmco-toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      background: #2980b9; color: white; padding: 14px 24px;
+      border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      display: flex; align-items: center; gap: 10px; font-weight: 600;
+      z-index: 10000;
+      animation: pmcoToastSlideIn 0.4s ease forwards,
+                 pmcoToastSlideOut 0.4s ease 2.6s forwards;
+    }
+    .pmco-toast i { font-size: 18px; }
+    @keyframes pmcoToastSlideIn { to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+    @keyframes pmcoToastSlideOut { from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                                   to { transform: translateX(-50%) translateY(100%); opacity: 0; } }
+    .spinner { display: inline-block; margin-right: 8px; }
+  `;
+  document.head.appendChild(style);
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+    style.remove();
+  }, 3000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Our Products | PMCO</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="page-body">
+
+<!-- Header -->
+<header>
+  <div class="header-container">
+    <a href="index.html" class="logo">
+      <img src="images/pmco-logo.png" alt="PMCO Logo" />
+      <span>PMCO</span>
+    </a>
+
+    <nav class="nav-menu" id="navMenu">
+      <a href="index.html">Home</a>
+      <a href="about.html">About Us</a>
+      <a href="services.html">Services</a>
+      <a href="products.html">Products</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+
+    <div class="hamburger" id="hamburger">&#9776;</div>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="container">
+    <h1>Our Products</h1>
+    <div class="products-grid" id="productsGrid">
+      <p>Loading products...</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-column">
+      <div class="footer-logo">PMCO</div>
+      <p>Empowering MSMEs. Enabling Global Buyers.</p>
+      <div class="social-icons">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+    <div class="footer-column">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="services.html">Services</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h4>Contact Info</h4>
+      <p><i class="fas fa-map-marker-alt"></i> Industrial Area, Goa, India</p>
+      <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+      <p><i class="fas fa-envelope"></i> info@pmco.com</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 PMCO. All Rights Reserved.</p>
+    <div class="footer-links">
+      <a href="#">Terms & Conditions</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
+    try {
+      const response = await fetch('/api/products');
+      if (!response.ok) throw new Error('Failed to fetch');
+
+      const products = await response.json();
+
+      if (Array.isArray(products) && products.length > 0) {
+        grid.innerHTML = products.map(p => `
+          <div class="product-card">
+            <img 
+              src="${p.imageUrl}" 
+              alt="${p.title}" 
+              onerror="this.src='images/placeholder.jpg'" 
+            />
+            <h3>${p.title}</h3>
+            <p>${p.description}</p>
+          </div>
+        `).join('');
+      } else {
+        grid.innerHTML = '<p>No products available at this time.</p>';
+      }
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      grid.innerHTML = '<p>Unable to load products. Please try again later.</p>';
+    }
+  });
+</script>
+</body>
+</html>

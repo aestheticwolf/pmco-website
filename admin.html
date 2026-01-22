@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PMCO Admin Panel</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+      color: #333;
+    }
+    h1, h2 {
+      color: #2980b9;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    button {
+      background: #2980b9;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #2573a7;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      margin-top: 20px;
+    }
+    .token-display {
+      background: #eaf2f8;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 14px;
+      word-break: break-all;
+    }
+    .hidden {
+      display: none;
+    }
+    .message {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 4px;
+    }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .item-list {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .item-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: white;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .item-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-edit, .btn-delete {
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-edit {
+      background: #ffc107;
+      color: #212529;
+    }
+    .btn-edit:hover {
+      background: #e0a800;
+    }
+    .btn-delete {
+      background: #dc3545;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #c82333;
+    }
+    .edit-form {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      display: none;
+    }
+    .dashboard-summary {
+      background: #eaf2f8;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .logout-btn {
+      background: #6c757d;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .logout-btn:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔒 PMCO Admin Panel</h1>
+
+  <!-- Login Section -->
+  <div id="loginSection">
+    <h2>Admin Login</h2>
+    <div class="form-group">
+      <input type="email" id="email" placeholder="Admin Email" value="admin@pmco.com" />
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" placeholder="Password" />
+    </div>
+    <button onclick="login()">Login</button>
+    <p id="loginMsg" class="message hidden"></p>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminSection" class="hidden">
+    <div class="token-display">✅ Logged in</div>
+
+    <!-- Dashboard Summary -->
+    <div class="dashboard-summary" id="dashboardSummary">
+      <strong>Products:</strong> <span id="productCount">0</span> | 
+      <strong>Services:</strong> <span id="serviceCount">0</span>
+    </div>
+
+    <!-- Add Product -->
+    <div class="section">
+      <h2>➕ Add New Product</h2>
+      <div class="form-group">
+        <input type="text" id="prodTitle" placeholder="Product Title" />
+      </div>
+      <div class="form-group">
+        <textarea id="prodDesc" placeholder="Product Description" rows="3"></textarea>
+      </div>
+ 
+      <div class="form-group">
+        <input type="file" id="prodImageFile" accept="image/*" />
+        <input type="hidden" id="prodImageUrl" name="imageUrl" />
+        <div id="prodImagePreview" style="margin-top: 10px;"></div>
+      </div>
+      <button onclick="addProduct()">Add Product</button>
+      <p id="prodMsg" class="message hidden"></p>
+    </div>
+
+    <!-- Product List -->
+    <div class="section">
+      <h2>📦 All Products</h2>
+      <div class="item-list" id="productsList">
+        <!-- Products will appear here -->
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <!-- Add Service -->
+    <div class="section">
+      <h2>➕ Add New Service</h2>
+      <div class="form-group">
+        <input type="text" id="servTitle" placeholder="Service Title" />
+      </div>
+      <div class="form-group">
+        <textarea id="servDesc" placeholder="Service Description" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <input type="text" id="servIcon" placeholder="Font Awesome Icon (e.g., industry)" />
+      </div>
+      <button onclick="addService()">Add Service</button>
+      <p id="servMsg" class="message hidden"></p>
+    </div>
+
+    <!-- Service List -->
+    <div class="section">
+      <h2>📦 All Services</h2>
+      <div class="item-list" id="servicesList">
+        <!-- Services will appear here -->
+        <p>Loading...</p>
+      </div>
+    </div>
+
+    <!-- Logout Button -->
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    let authToken = localStorage.getItem('adminToken');
+
+    // Auto-login if token exists
+    if (authToken) {
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('adminSection').classList.remove('hidden');
+      loadDashboard();
+    }
+
+    function showMessage(elId, text, isError = false) {
+      const el = document.getElementById(elId);
+      el.textContent = text;
+      el.className = `message ${isError ? 'error' : 'success'}`;
+      el.classList.remove('hidden');
+    }
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const msgEl = document.getElementById('loginMsg');
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (data.token) {
+          authToken = data.token;
+          localStorage.setItem('adminToken', authToken);
+          document.getElementById('loginSection').classList.add('hidden');
+          document.getElementById('adminSection').classList.remove('hidden');
+          msgEl.classList.add('hidden');
+          loadDashboard();
+        } else {
+          showMessage('loginMsg', data.error || 'Invalid credentials', true);
+        }
+      } catch (err) {
+        showMessage('loginMsg', 'Network error. Check console.', true);
+        console.error(err);
+      }
+    }
+
+    async function logout() {
+      localStorage.removeItem('adminToken');
+      authToken = null;
+      document.getElementById('loginSection').classList.remove('hidden');
+      document.getElementById('adminSection').classList.add('hidden');
+    }
+
+    async function loadDashboard() {
+      try {
+        // Load products
+        const prodRes = await fetch('/api/admin/products', {
+          headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        const products = await prodRes.json();
+        document.getElementById('productCount').textContent = products.length;
+        renderProducts(products);
+
+        // Load services
+        const servRes = await fetch('/api/admin/services', {
+          headers: { 'Authorization': 'Bearer ' + authToken }
+        });
+        const services = await servRes.json();
+        document.getElementById('serviceCount').textContent = services.length;
+        renderServices(services);
+
+      } catch (err) {
+        console.error('Failed to load dashboard:', err);
+      }
+    }
+
+    function renderProducts(products) {
+      const list = document.getElementById('productsList');
+      if (products.length === 0) {
+        list.innerHTML = '<p>No products yet.</p>';
+        return;
+      }
+
+      list.innerHTML = products.map(p => `
+        <div class="item-card">
+          <div>
+            <strong>${p.title}</strong><br>
+            <small>${p.description.substring(0, 50)}${p.description.length > 50 ? '...' : ''}</small>
+          </div>
+          <div class="item-actions">
+            <button class="btn-edit" onclick="editProduct('${p._id}')">Edit</button>
+            <button class="btn-delete" onclick="deleteProduct('${p._id}')">Delete</button>
+          </div>
+          <div class="edit-form" id="editForm-${p._id}" style="display:none;">
+            <input type="text" id="editTitle-${p._id}" value="${p.title}" placeholder="Title" />
+            <textarea id="editDesc-${p._id}" placeholder="Description">${p.description}</textarea>
+            <input type="text" id="editImage-${p._id}" value="${p.imageUrl}" placeholder="Image Path" />
+            <button onclick="saveProduct('${p._id}')">Save</button>
+            <button onclick="cancelEdit('${p._id}')">Cancel</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderServices(services) {
+      const list = document.getElementById('servicesList');
+      if (services.length === 0) {
+        list.innerHTML = '<p>No services yet.</p>';
+        return;
+      }
+
+      list.innerHTML = services.map(s => `
+        <div class="item-card">
+          <div>
+            <strong>${s.title}</strong><br>
+            <small>${s.description.substring(0, 50)}${s.description.length > 50 ? '...' : ''}</small>
+          </div>
+          <div class="item-actions">
+            <button class="btn-edit" onclick="editService('${s._id}')">Edit</button>
+            <button class="btn-delete" onclick="deleteService('${s._id}')">Delete</button>
+          </div>
+          <div class="edit-form" id="editForm-${s._id}" style="display:none;">
+            <input type="text" id="editTitle-${s._id}" value="${s.title}" placeholder="Title" />
+            <textarea id="editDesc-${s._id}" placeholder="Description">${s.description}</textarea>
+            <input type="text" id="editIcon-${s._id}" value="${s.icon}" placeholder="Icon" />
+            <button onclick="saveService('${s._id}')">Save</button>
+            <button onclick="cancelEdit('${s._id}')">Cancel</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function addProduct() {
+      const title = document.getElementById('prodTitle').value.trim();
+      const desc = document.getElementById('prodDesc').value.trim();
+      
+      const prodImageUrlInput = document.getElementById('prodImageUrl');
+      if (!prodImageUrlInput) {
+        showMessage('prodMsg', 'Image upload field not found', true);
+        return;
+      }
+
+      const img = prodImageUrlInput.value.trim();
+
+      if (!title || !desc || !img) {
+        showMessage('prodMsg', 'All fields required', true);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ title, description: desc, imageUrl: img })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('prodMsg', '✅ Product added!');
+          document.getElementById('prodTitle').value = '';
+          document.getElementById('prodDesc').value = '';
+          document.getElementById('prodImageFile').value = ''; // Clear file input
+          prodImageUrlInput.value = ''; // Clear hidden value
+          document.getElementById('prodImagePreview').innerHTML = ''; // Clear preview
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('prodMsg', data.error || 'Failed to add product', true);
+        }
+      } catch (err) {
+        showMessage('prodMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    async function addService() {
+      const title = document.getElementById('servTitle').value.trim();
+      const desc = document.getElementById('servDesc').value.trim();
+      const icon = document.getElementById('servIcon').value.trim();
+      const msgEl = document.getElementById('servMsg');
+
+      if (!title || !desc || !icon) {
+        showMessage('servMsg', 'All fields required', true);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/services', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ title, description: desc, icon })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('servMsg', '✅ Service added!');
+          document.getElementById('servTitle').value = '';
+          document.getElementById('servDesc').value = '';
+          document.getElementById('servIcon').value = '';
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('servMsg', data.error || 'Failed to add service', true);
+        }
+      } catch (err) {
+        showMessage('servMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    function editProduct(id) {
+      document.getElementById(`editForm-${id}`).style.display = 'block';
+    }
+
+    function cancelEdit(id) {
+      document.getElementById(`editForm-${id}`).style.display = 'none';
+    }
+
+    async function saveProduct(id) {
+      const title = document.getElementById(`editTitle-${id}`).value.trim();
+      const desc = document.getElementById(`editDesc-${id}`).value.trim();
+      const img = document.getElementById(`editImage-${id}`).value.trim();
+      const msgEl = document.getElementById('prodMsg');
+
+      if (!title || !desc || !img) {
+        showMessage('prodMsg', 'All fields required', true);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/products/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ title, description: desc, imageUrl: img })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('prodMsg', '✅ Product updated!');
+          document.getElementById(`editForm-${id}`).style.display = 'none';
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('prodMsg', data.error || 'Failed to update product', true);
+        }
+      } catch (err) {
+        showMessage('prodMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Are you sure you want to delete this product?')) return;
+
+      try {
+        const res = await fetch(`/api/admin/products/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + authToken
+          }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('prodMsg', '✅ Product deleted!');
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('prodMsg', data.error || 'Failed to delete product', true);
+        }
+      } catch (err) {
+        showMessage('prodMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    function editService(id) {
+      document.getElementById(`editForm-${id}`).style.display = 'block';
+    }
+
+    async function saveService(id) {
+      const title = document.getElementById(`editTitle-${id}`).value.trim();
+      const desc = document.getElementById(`editDesc-${id}`).value.trim();
+      const icon = document.getElementById(`editIcon-${id}`).value.trim();
+      const msgEl = document.getElementById('servMsg');
+
+      if (!title || !desc || !icon) {
+        showMessage('servMsg', 'All fields required', true);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/admin/services/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ title, description: desc, icon })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('servMsg', '✅ Service updated!');
+          document.getElementById(`editForm-${id}`).style.display = 'none';
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('servMsg', data.error || 'Failed to update service', true);
+        }
+      } catch (err) {
+        showMessage('servMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    async function deleteService(id) {
+      if (!confirm('Are you sure you want to delete this service?')) return;
+
+      try {
+        const res = await fetch(`/api/admin/services/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + authToken
+          }
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showMessage('servMsg', '✅ Service deleted!');
+          loadDashboard(); // Refresh list
+        } else {
+          showMessage('servMsg', data.error || 'Failed to delete service', true);
+        }
+      } catch (err) {
+        showMessage('servMsg', 'Network error', true);
+        console.error(err);
+      }
+    }
+
+    // Handle image upload
+    async function uploadImage(fileInputId, previewId, hiddenId) {
+      const fileInput = document.getElementById(fileInputId);
+      const preview = document.getElementById(previewId);
+      const hidden = document.getElementById(hiddenId);
+
+      if (!fileInput.files[0]) return;
+
+      const formData = new FormData();
+      formData.append('image', fileInput.files[0]);
+
+      try {
+        const res = await fetch('/api/admin/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + authToken },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          hidden.value = data.imageUrl;
+          preview.innerHTML = `<img src="${data.imageUrl}" style="max-width:100px; max-height:100px;" />`;
+        } else {
+          alert('Upload failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Upload error: ' + err.message);
+      }
+    }
+
+    // Attach to file inputs
+    document.getElementById('prodImageFile').addEventListener('change', () => {
+      uploadImage('prodImageFile', 'prodImagePreview', 'prodImageUrl');
+    });
+  </script>
+</body>
+</html>
