@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+.env
+npm-debug.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+
+
+uploads/

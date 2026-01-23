@@ -4,114 +4,256 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PMCO Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-
     /* Admin Toast Notification */
-.admin-toast {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  color: white;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 10000;
-  opacity: 0;
-  transform: translateX(100%);
-  transition: all 0.3s ease;
-}
-.admin-toast.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-.admin-toast.success { background: #28a745; }   /* Green */
-.admin-toast.info    { background: #17a2b8; }   /* Blue */
-.admin-toast.error   { background: #dc3545; }   /* Red */
+    .admin-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      z-index: 10000;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.3s ease;
+    }
+    .admin-toast.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .admin-toast.success { background: #28a745; }   /* Green */
+    .admin-toast.info    { background: #17a2b8; }   /* Blue */
+    .admin-toast.error   { background: #dc3545; }   /* Red */
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+      margin: 0;
+      padding: 0;
       color: #333;
+      min-height: 100vh;
     }
-    h1, h2 {
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header Styles */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px 0;
+    }
+    .header h1 {
       color: #2980b9;
+      font-size: 2.5rem;
+      margin: 0;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    .header i {
+      margin-right: 12px;
+      color: #3498db;
+    }
+
+    /* Login Section */
+    #loginSection {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      padding: 40px;
+      max-width: 450px;
+      margin: 50px auto;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    #loginSection h2 {
+      text-align: center;
+      color: #2980b9;
+      margin-bottom: 30px;
+      font-size: 1.8rem;
     }
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
     }
     input, textarea, button {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      padding: 14px;
+      border: 2px solid #e1e8ed;
+      border-radius: 8px;
       font-size: 16px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
     }
     button {
       background: #2980b9;
       color: white;
       cursor: pointer;
       font-weight: bold;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 16px;
+      padding: 14px;
+      border-radius: 8px;
     }
     button:hover {
       background: #2573a7;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.3);
     }
-    .section {
+
+    /* Dashboard Section */
+    #adminSection {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .token-display {
+      background: linear-gradient(135deg, #2980b9, #1a5276);
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      font-size: 16px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(41, 128, 185, 0.3);
+    }
+
+    /* Dashboard Summary */
+    .dashboard-summary {
       background: white;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      margin-top: 20px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border-left: 4px solid #2980b9;
     }
-    .token-display {
-      background: #eaf2f8;
-      padding: 12px;
-      border-radius: 6px;
-      margin-top: 15px;
-      font-size: 14px;
-      word-break: break-all;
+    .dashboard-summary strong {
+      color: #2980b9;
+      font-size: 1.1rem;
     }
-    .hidden {
-      display: none;
+    .dashboard-summary span {
+      font-weight: bold;
+      color: #2c3e50;
     }
-    .message {
-      margin-top: 8px;
-      padding: 8px;
-      border-radius: 4px;
+
+    /* Section Styles */
+    .section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      margin-top: 25px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .success { background: #d4edda; color: #155724; }
-    .error { background: #f8d7da; color: #721c24; }
+    .section:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #2980b9;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #f1f5f9;
+    }
+    .section h2 i {
+      margin-right: 10px;
+      color: #3498db;
+    }
+
+    /* Item Card Styles */
     .item-list {
       margin-top: 20px;
-      padding: 15px;
-      background: #f8f9fa;
-      border-radius: 8px;
+      padding: 0;
+      background: transparent;
     }
     .item-card {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 12px;
+      align-items: flex-start;
+      padding: 20px;
       background: white;
-      border: 1px solid #eee;
-      border-radius: 6px;
-      margin-bottom: 10px;
+      border: 1px solid #eaeef5;
+      border-radius: 10px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 15px;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
+    .item-card:hover {
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .contact-info, .remark-section {
+      flex: 1;
+      min-width: 220px;
+    }
+    .contact-info strong {
+      color: #2980b9;
+      font-size: 1.1rem;
+    }
+    .contact-info small {
+      display: block;
+      margin: 5px 0;
+      color: #7f8c8d;
+    }
+
+    /* Status Badge */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 5px 0;
+    }
+    .status-attended {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status-unattended {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .status-badge i {
+      margin-right: 6px;
+    }
+
+    /* Action Buttons */
     .item-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 10px;
     }
     .btn-edit, .btn-delete {
-      padding: 6px 12px;
+      padding: 8px 16px;
       font-size: 14px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
     }
     .btn-edit {
       background: #ffc107;
@@ -119,6 +261,7 @@
     }
     .btn-edit:hover {
       background: #e0a800;
+      transform: translateY(-2px);
     }
     .btn-delete {
       background: #dc3545;
@@ -126,137 +269,268 @@
     }
     .btn-delete:hover {
       background: #c82333;
+      transform: translateY(-2px);
     }
+
+    /* Status Toggle Buttons */
+    .status-toggle {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .toggle-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .toggle-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .toggle-attended {
+      background: #28a745;
+      color: white;
+    }
+    .toggle-attended:disabled {
+      background: #6c757d;
+    }
+    .toggle-unattended {
+      background: #dc3545;
+      color: white;
+    }
+    .toggle-unattended:disabled {
+      background: #6c757d;
+    }
+
+    /* Edit Form */
     .edit-form {
-      margin-top: 15px;
-      padding: 15px;
+      margin-top: 20px;
+      padding: 20px;
       background: #f8f9fa;
-      border-radius: 8px;
+      border-radius: 10px;
       display: none;
+      border: 1px solid #e9ecef;
     }
-    .dashboard-summary {
-      background: #eaf2f8;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+
+    /* Logout Button */
     .logout-btn {
       background: #6c757d;
       color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-top: 10px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-top: 20px;
       cursor: pointer;
+      font-weight: bold;
+      border: none;
+      transition: all 0.3s ease;
+      display: block;
+      margin-left: auto;
     }
     .logout-btn:hover {
       background: #5a6268;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
     }
-    .contact-info {
-      flex: 1;
-      min-width: 200px;
+
+    /* Hidden Class */
+    .hidden {
+      display: none;
     }
-    .remark-section {
-      flex: 1;
-      min-width: 200px;
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Design */
     @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      #loginSection {
+        padding: 30px 20px;
+        margin: 30px 10px;
+      }
+      .header h1 {
+        font-size: 2rem;
+      }
+      .section {
+        padding: 20px;
+      }
       .item-card {
         flex-direction: column;
         align-items: stretch;
       }
+      .status-toggle {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toggle-btn {
+        width: 100%;
+      }
+    }
+
+    /* File Input Styling */
+    .file-input-container {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 2px dashed #cbd5e0;
+      padding: 20px;
+      text-align: center;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+    }
+    .file-input-container:hover {
+      border-color: #3498db;
+      background: #f1f8ff;
+    }
+    .file-input-container input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    .file-input-label {
+      display: block;
+      padding: 10px;
+      color: #2980b9;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .file-input-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #3498db;
     }
   </style>
 </head>
 <body>
-  <h1>🔒 PMCO Admin Panel</h1>
-
-  <!-- Login Section -->
-  <div id="loginSection">
-    <h2>Admin Login</h2>
-    <div class="form-group">
-      <input type="email" id="email" placeholder="Admin Email" value="admin@pmco.com" />
-    </div>
-    <div class="form-group">
-      <input type="password" id="password" placeholder="Password" />
-    </div>
-    <button onclick="login()">Login</button>
-  </div>
-
-  <!-- Admin Dashboard -->
-  <div id="adminSection" class="hidden">
-    <div class="token-display">✅ Logged in</div>
-
-    <!-- Dashboard Summary -->
-    <div class="dashboard-summary" id="dashboardSummary">
-      <strong>Products:</strong> <span id="productCount">0</span> | 
-      <strong>Services:</strong> <span id="serviceCount">0</span> |
-      <strong>Enquiries:</strong> <span id="contactCount">0</span>
+  <div class="container">
+    <div class="header">
+      <h1><i class="fas fa-lock"></i> PMCO Admin Panel</h1>
     </div>
 
-    <!-- Add Product -->
-    <div class="section">
-      <h2>➕ Add New Product</h2>
+    <!-- Login Section -->
+    <div id="loginSection">
+      <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
       <div class="form-group">
-        <input type="text" id="prodTitle" placeholder="Product Title" />
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Enter your admin email" value="admin@pmco.com" />
       </div>
       <div class="form-group">
-        <textarea id="prodDesc" placeholder="Product Description" rows="3"></textarea>
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" />
       </div>
- 
-      <div class="form-group">
-        <input type="file" id="prodImageFile" accept="image/*" />
-        <input type="hidden" id="prodImageUrl" name="imageUrl" />
-        <div id="prodImagePreview" style="margin-top: 10px;"></div>
-      </div>
-      <button onclick="addProduct()">Add Product</button>
+      <button onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
     </div>
 
-    <!-- Product List -->
-    <div class="section">
-      <h2>📦 All Products</h2>
-      <div class="item-list" id="productsList">
-        <!-- Products will appear here -->
-        <p>Loading...</p>
+    <!-- Admin Dashboard -->
+    <div id="adminSection" class="hidden">
+      <div class="token-display">
+        <i class="fas fa-check-circle"></i> ✅ Logged in as Admin
       </div>
-    </div>
 
-    <!-- Add Service -->
-    <div class="section">
-      <h2>➕ Add New Service</h2>
-      <div class="form-group">
-        <input type="text" id="servTitle" placeholder="Service Title" />
+      <!-- Dashboard Summary -->
+      <div class="dashboard-summary">
+        <strong>Dashboard Overview</strong><br>
+        <span>Products:</span> <strong id="productCount">0</strong> | 
+        <span>Services:</span> <strong id="serviceCount">0</strong> |
+        <span>Enquiries:</span> <strong id="contactCount">0</strong>
       </div>
-      <div class="form-group">
-        <textarea id="servDesc" placeholder="Service Description" rows="3"></textarea>
-      </div>
-      <div class="form-group">
-        <input type="text" id="servIcon" placeholder="Font Awesome Icon (e.g., industry)" />
-      </div>
-      <button onclick="addService()">Add Service</button>
-    </div>
 
-    <!-- Service List -->
-    <div class="section">
-      <h2>📦 All Services</h2>
-      <div class="item-list" id="servicesList">
-        <!-- Services will appear here -->
-        <p>Loading...</p>
+      <!-- Add Product -->
+      <div class="section">
+        <h2><i class="fas fa-plus-circle"></i> Add New Product</h2>
+        <div class="form-group">
+          <label for="prodTitle">Product Title</label>
+          <input type="text" id="prodTitle" placeholder="Enter product title" />
+        </div>
+        <div class="form-group">
+          <label for="prodDesc">Product Description</label>
+          <textarea id="prodDesc" placeholder="Enter product description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Product Image</label>
+          <div class="file-input-container">
+            <div class="file-input-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="file-input-label">Click to upload image</div>
+            <input type="file" id="prodImageFile" accept="image/*" />
+          </div>
+          <input type="hidden" id="prodImageUrl" name="imageUrl" />
+          <div id="prodImagePreview" style="margin-top: 15px;"></div>
+        </div>
+        <button onclick="addProduct()"><i class="fas fa-plus"></i> Add Product</button>
       </div>
-    </div>
 
-    <!-- Contact Enquiries -->
-    <div class="section">
-      <h2>📩 Contact Enquiries</h2>
-      <div class="item-list" id="contactsList">
-        <!-- Contacts will appear here -->
-        <p>Loading...</p>
+      <!-- Product List -->
+      <div class="section">
+        <h2><i class="fas fa-boxes"></i> All Products</h2>
+        <div class="item-list" id="productsList">
+          <p>Loading products...</p>
+        </div>
       </div>
-    </div>
 
-    <!-- Logout Button -->
-    <button class="logout-btn" onclick="logout()">Logout</button>
+      <!-- Add Service -->
+      <div class="section">
+        <h2><i class="fas fa-plus-circle"></i> Add New Service</h2>
+        <div class="form-group">
+          <label for="servTitle">Service Title</label>
+          <input type="text" id="servTitle" placeholder="Enter service title" />
+        </div>
+        <div class="form-group">
+          <label for="servDesc">Service Description</label>
+          <textarea id="servDesc" placeholder="Enter service description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="servIcon">Icon Class (Font Awesome)</label>
+          <input type="text" id="servIcon" placeholder="e.g., fa-cogs, fa-industry" />
+        </div>
+        <button onclick="addService()"><i class="fas fa-plus"></i> Add Service</button>
+      </div>
+
+      <!-- Service List -->
+      <div class="section">
+        <h2><i class="fas fa-concierge-bell"></i> All Services</h2>
+        <div class="item-list" id="servicesList">
+          <p>Loading services...</p>
+        </div>
+      </div>
+
+      <!-- Contact Enquiries -->
+      <div class="section">
+        <h2><i class="fas fa-envelope"></i> Contact Enquiries</h2>
+        <div class="item-list" id="contactsList">
+          <p>Loading enquiries...</p>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
   </div>
 
   <script>
@@ -269,28 +543,27 @@
       loadDashboard();
     }
 
-   function showToast(message, type = 'success') {
-  const existing = document.querySelector('.admin-toast');
-  if (existing) existing.remove();
+    function showToast(message, type = 'success') {
+      const existing = document.querySelector('.admin-toast');
+      if (existing) existing.remove();
 
-  const toast = document.createElement('div');
-  toast.className = `admin-toast ${type}`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
+      const toast = document.createElement('div');
+      toast.className = `admin-toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
 
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => {
-      if (toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 300);
-  }, 3000);
-}
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 3000);
+    }
 
     async function login() {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      //const msgEl = document.getElementById('loginMsg');
 
       try {
         const res = await fetch('/api/admin/login', {
@@ -357,7 +630,7 @@
     function renderProducts(products) {
       const list = document.getElementById('productsList');
       if (products.length === 0) {
-        list.innerHTML = '<p>No products yet.</p>';
+        list.innerHTML = '<p class="no-data">No products added yet.</p>';
         return;
       }
 
@@ -365,18 +638,31 @@
         <div class="item-card">
           <div>
             <strong>${p.title}</strong><br>
-            <small>${p.description.substring(0, 50)}${p.description.length > 50 ? '...' : ''}</small>
+            <small>${p.description.substring(0, 80)}${p.description.length > 80 ? '...' : ''}</small>
           </div>
           <div class="item-actions">
-            <button class="btn-edit" onclick="editProduct('${p._id}')">Edit</button>
-            <button class="btn-delete" onclick="deleteProduct('${p._id}')">Delete</button>
+            <button class="btn-edit" onclick="editProduct('${p._id}')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-delete" onclick="deleteProduct('${p._id}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
           </div>
           <div class="edit-form" id="editForm-${p._id}" style="display:none;">
-            <input type="text" id="editTitle-${p._id}" value="${p.title}" placeholder="Title" />
-            <textarea id="editDesc-${p._id}" placeholder="Description">${p.description}</textarea>
-            <input type="text" id="editImage-${p._id}" value="${p.imageUrl}" placeholder="Image Path" />
-            <button onclick="saveProduct('${p._id}')">Save</button>
-            <button onclick="cancelEdit('${p._id}')">Cancel</button>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="editTitle-${p._id}" value="${p.title}" placeholder="Product Title" />
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="editDesc-${p._id}" placeholder="Product Description">${p.description}</textarea>
+            </div>
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="text" id="editImage-${p._id}" value="${p.imageUrl}" placeholder="Image Path" />
+            </div>
+            <button onclick="saveProduct('${p._id}')"><i class="fas fa-save"></i> Save Changes</button>
+            <button onclick="cancelEdit('${p._id}')"><i class="fas fa-times"></i> Cancel</button>
           </div>
         </div>
       `).join('');
@@ -385,7 +671,7 @@
     function renderServices(services) {
       const list = document.getElementById('servicesList');
       if (services.length === 0) {
-        list.innerHTML = '<p>No services yet.</p>';
+        list.innerHTML = '<p class="no-data">No services added yet.</p>';
         return;
       }
 
@@ -393,91 +679,110 @@
         <div class="item-card">
           <div>
             <strong>${s.title}</strong><br>
-            <small>${s.description.substring(0, 50)}${s.description.length > 50 ? '...' : ''}</small>
+            <small>${s.description.substring(0, 80)}${s.description.length > 80 ? '...' : ''}</small>
           </div>
           <div class="item-actions">
-            <button class="btn-edit" onclick="editService('${s._id}')">Edit</button>
-            <button class="btn-delete" onclick="deleteService('${s._id}')">Delete</button>
+            <button class="btn-edit" onclick="editService('${s._id}')">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="btn-delete" onclick="deleteService('${s._id}')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
           </div>
           <div class="edit-form" id="editForm-${s._id}" style="display:none;">
-            <input type="text" id="editTitle-${s._id}" value="${s.title}" placeholder="Title" />
-            <textarea id="editDesc-${s._id}" placeholder="Description">${s.description}</textarea>
-            <input type="text" id="editIcon-${s._id}" value="${s.icon}" placeholder="Icon" />
-            <button onclick="saveService('${s._id}')">Save</button>
-            <button onclick="cancelEdit('${s._id}')">Cancel</button>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="editTitle-${s._id}" value="${s.title}" placeholder="Service Title" />
+            </div>
+            <div class="form-group">
+              <label>Description</label>
+              <textarea id="editDesc-${s._id}" placeholder="Service Description">${s.description}</textarea>
+            </div>
+            <div class="form-group">
+              <label>Icon Class</label>
+              <input type="text" id="editIcon-${s._id}" value="${s.icon}" placeholder="Font Awesome Icon" />
+            </div>
+            <button onclick="saveService('${s._id}')"><i class="fas fa-save"></i> Save Changes</button>
+            <button onclick="cancelEdit('${s._id}')"><i class="fas fa-times"></i> Cancel</button>
           </div>
         </div>
       `).join('');
     }
 
-function renderContacts(contacts) {
-  const list = document.getElementById('contactsList');
-  if (contacts.length === 0) {
-    list.innerHTML = '<p>No enquiries yet.</p>';
-    return;
-  }
+    function renderContacts(contacts) {
+      const list = document.getElementById('contactsList');
+      if (contacts.length === 0) {
+        list.innerHTML = '<p class="no-data">No enquiries received yet.</p>';
+        return;
+      }
 
-  list.innerHTML = contacts.map(c => `
-    <div class="item-card" style="${(c.attendedStatus === 'marked') ? 'border-left: 4px solid #28a745; background: #f0fff4;' : ''}">
-      <div class="contact-info">
-        <strong>${c.name}</strong> (${c.email})<br>
-        <small>${c.message.substring(0, 60)}${c.message.length > 60 ? '...' : ''}</small><br>
-        <small>IP: ${c.ipAddress || 'N/A'} | ${new Date(c.submittedAt).toLocaleDateString()}</small>
-      </div>
-      <div class="remark-section" style="display: flex; flex-direction: column; gap: 10px; min-width: 200px;">
-        <div style="display: flex; align-items: center; gap: 8px; background: ${(c.attendedStatus === 'marked') ? '#d4edda' : '#f8d7da'}; padding: 8px; border-radius: 4px;">
-          <span style="font-size: 14px; font-weight: bold; color: ${(c.attendedStatus === 'marked') ? '#155724' : '#721c24'};">
-            ${c.attendedStatus === 'marked' ? '✅ Marked as Attended' : '❌ Not Attended'}
-          </span>
-          <button 
-            onclick="markAsAttended('${c._id}', '${c.attendedStatus}')" 
-            style="padding: 5px 10px; background: ${(c.attendedStatus === 'marked') ? '#6c757d' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;"
-            ${(c.attendedStatus === 'marked') ? 'disabled' : ''}
-          >
-            ${c.attendedStatus === 'marked' ? '✓ Attended' : 'Mark Attended'}
-          </button>
-          <button 
-            onclick="unmarkAsAttended('${c._id}', '${c.attendedStatus}')" 
-            style="padding: 5px 10px; background: ${(c.attendedStatus === 'unmarked') ? '#6c757d' : '#dc3545'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;"
-            ${(c.attendedStatus === 'unmarked') ? 'disabled' : ''}
-          >
-            ${c.attendedStatus === 'unmarked' ? '× Unattended' : 'Unmark'}
-          </button>
+      list.innerHTML = contacts.map(c => `
+        <div class="item-card" style="${(c.attendedStatus === 'marked') ? 'border-left: 4px solid #28a745; background: #f8fff9;' : ''}">
+          <div class="contact-info">
+            <strong>${c.name}</strong> (${c.email})<br>
+            <small>${c.message.substring(0, 80)}${c.message.length > 80 ? '...' : ''}</small><br>
+            <small>IP: ${c.ipAddress || 'N/A'} | ${new Date(c.submittedAt).toLocaleDateString()}</small>
+          </div>
+          <div class="remark-section">
+            <div class="status-badge ${(c.attendedStatus === 'marked') ? 'status-attended' : 'status-unattended'}">
+              <i class="fas ${(c.attendedStatus === 'marked') ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+              ${c.attendedStatus === 'marked' ? 'Marked as Attended' : 'Not Attended'}
+            </div>
+            
+            <div class="form-group">
+              <label>Action Remark</label>
+              <textarea 
+                id="remark-${c._id}" 
+                placeholder="Add action remark..."
+                rows="2"
+              >${c.actionRemark || ''}</textarea>
+            </div>
+            
+            <div class="status-toggle">
+              <button 
+                class="toggle-btn toggle-attended"
+                onclick="markAsAttended('${c._id}', '${c.attendedStatus}')" 
+                ${(c.attendedStatus === 'marked') ? 'disabled' : ''}
+              >
+                <i class="fas fa-check"></i> Mark Attended
+              </button>
+              <button 
+                class="toggle-btn toggle-unattended"
+                onclick="unmarkAsAttended('${c._id}', '${c.attendedStatus}')" 
+                ${(c.attendedStatus === 'unmarked') ? 'disabled' : ''}
+              >
+                <i class="fas fa-times"></i> Unmark
+              </button>
+            </div>
+            
+            <div class="item-actions" style="margin-top: 15px;">
+              <button 
+                onclick="saveRemark('${c._id}')" 
+                style="flex: 1; margin-right: 8px;"
+              >
+                <i class="fas fa-comment"></i> ${c.actionRemark ? 'Update Remark' : 'Save Remark'}
+              </button>
+              <button 
+                onclick="deleteContact('${c._id}')" 
+                style="flex: 1;"
+              >
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
         </div>
-        <textarea 
-          id="remark-${c._id}" 
-          placeholder="Add action remark..." 
-          rows="2"
-          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
-        >${c.actionRemark || ''}</textarea>
-        <div style="display: flex; gap: 8px;">
-          <button 
-            onclick="saveRemark('${c._id}')" 
-            style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer;"
-          >
-            ${c.actionRemark ? 'Update Remark' : 'Save Remark'}
-          </button>
-          <button 
-            onclick="deleteContact('${c._id}')" 
-            style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  `).join('');
-}
+      `).join('');
+    }
 
     async function addProduct() {
       const title = document.getElementById('prodTitle').value.trim();
       const desc = document.getElementById('prodDesc').value.trim();
       
       const prodImageUrlInput = document.getElementById('prodImageUrl');
-if (!prodImageUrlInput) {
-  showToast('Image upload field not found', 'error');
-  return;
-}
+      if (!prodImageUrlInput) {
+        showToast('Image upload field not found', 'error');
+        return;
+      }
 
       const img = prodImageUrlInput.value.trim();
 
@@ -498,13 +803,13 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('✅ Product added!', 'success');
+          showToast('✅ Product added successfully!', 'success');
           document.getElementById('prodTitle').value = '';
           document.getElementById('prodDesc').value = '';
-          document.getElementById('prodImageFile').value = ''; // Clear file input
-          prodImageUrlInput.value = ''; // Clear hidden value
-          document.getElementById('prodImagePreview').innerHTML = ''; // Clear preview
-          loadDashboard(); // Refresh list
+          document.getElementById('prodImageFile').value = '';
+          prodImageUrlInput.value = '';
+          document.getElementById('prodImagePreview').innerHTML = '';
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to add product', 'error');
         }
@@ -518,7 +823,6 @@ if (!prodImageUrlInput) {
       const title = document.getElementById('servTitle').value.trim();
       const desc = document.getElementById('servDesc').value.trim();
       const icon = document.getElementById('servIcon').value.trim();
-     // const msgEl = document.getElementById('servMsg');
 
       if (!title || !desc || !icon) {
         showToast('All fields required', 'error');
@@ -532,16 +836,16 @@ if (!prodImageUrlInput) {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + authToken
           },
-          body: JSON.stringify({ title, description: desc, icon })
+          body: JSON.stringify({ title, description: desc, icon: icon })
         });
 
         const data = await res.json();
         if (res.ok) {
-          showToast('✅ Service added!', 'success');
+          showToast('✅ Service added successfully!', 'success');
           document.getElementById('servTitle').value = '';
           document.getElementById('servDesc').value = '';
           document.getElementById('servIcon').value = '';
-          loadDashboard(); // Refresh list
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to add service', 'error');
         }
@@ -580,9 +884,9 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('🔄 Product updated!', 'info');
+          showToast('🔄 Product updated successfully!', 'info');
           document.getElementById(`editForm-${id}`).style.display = 'none';
-          loadDashboard(); // Refresh list
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to update product', 'error');
         }
@@ -605,8 +909,8 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('❌ Product deleted!', 'error');
-          loadDashboard(); // Refresh list
+          showToast('❌ Product deleted successfully!', 'error');
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to delete product', 'error');
         }
@@ -624,7 +928,6 @@ if (!prodImageUrlInput) {
       const title = document.getElementById(`editTitle-${id}`).value.trim();
       const desc = document.getElementById(`editDesc-${id}`).value.trim();
       const icon = document.getElementById(`editIcon-${id}`).value.trim();
-      //const msgEl = document.getElementById('servMsg');
 
       if (!title || !desc || !icon) {
         showToast('All fields required', 'error');
@@ -638,14 +941,14 @@ if (!prodImageUrlInput) {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + authToken
           },
-          body: JSON.stringify({ title, description: desc, icon })
+          body: JSON.stringify({ title, description: desc, icon: icon })
         });
 
         const data = await res.json();
         if (res.ok) {
-          showToast('🔄 Service updated!', 'info');
+          showToast('🔄 Service updated successfully!', 'info');
           document.getElementById(`editForm-${id}`).style.display = 'none';
-          loadDashboard(); // Refresh list
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to update service', 'error');
         }
@@ -668,8 +971,8 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('❌ Service deleted!', 'error');
-          loadDashboard(); // Refresh list
+          showToast('❌ Service deleted successfully!', 'error');
+          loadDashboard();
         } else {
           showToast(data.error || 'Failed to delete service', 'error');
         }
@@ -692,8 +995,8 @@ if (!prodImageUrlInput) {
         });
         
         if (res.ok) {
-          showToast('🔄 Remark updated!', 'info');
-          loadDashboard(); // Refresh to show updated remark
+          showToast('🔄 Remark updated successfully!', 'info');
+          loadDashboard();
         } else {
           const data = await res.json();
           showToast(data.error || 'Failed to save remark', 'error');
@@ -716,8 +1019,8 @@ if (!prodImageUrlInput) {
         });
         
         if (res.ok) {
-          showToast('❌ Contact deleted!', 'error');
-          loadDashboard(); // Refresh list
+          showToast('❌ Contact deleted successfully!', 'error');
+          loadDashboard();
         } else {
           const data = await res.json();
           showToast(data.error || 'Failed to delete contact', 'error');
@@ -729,7 +1032,7 @@ if (!prodImageUrlInput) {
     }
 
     async function markAsAttended(id, currentStatus) {
-      if (currentStatus === 'marked') return; // Already marked
+      if (currentStatus === 'marked') return;
       try {
         const res = await fetch(`/api/admin/contacts/${id}`, {
           method: 'PUT',
@@ -742,7 +1045,7 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('✅ Marked as attended!', 'success');
+          showToast('✅ Marked as attended successfully!', 'success');
           loadDashboard();
         } else {
           showToast(data.error || 'Failed to update status', 'error');
@@ -754,7 +1057,7 @@ if (!prodImageUrlInput) {
     }
 
     async function unmarkAsAttended(id, currentStatus) {
-      if (currentStatus === 'unmarked') return; // Already unmarked
+      if (currentStatus === 'unmarked') return;
       try {
         const res = await fetch(`/api/admin/contacts/${id}`, {
           method: 'PUT',
@@ -767,7 +1070,7 @@ if (!prodImageUrlInput) {
 
         const data = await res.json();
         if (res.ok) {
-          showToast('🔄 Unmarked as attended', 'info');
+          showToast('🔄 Unmarked as attended successfully!', 'info');
           loadDashboard();
         } else {
           showToast(data.error || 'Failed to update status', 'error');
@@ -799,7 +1102,7 @@ if (!prodImageUrlInput) {
         const data = await res.json();
         if (res.ok) {
           hidden.value = data.imageUrl;
-          preview.innerHTML = `<img src="${data.imageUrl}" style="max-width:100px; max-height:100px;" />`;
+          preview.innerHTML = `<img src="${data.imageUrl}" style="max-width:150px; max-height:150px; border-radius: 8px; margin-top: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />`;
         } else {
           alert('Upload failed: ' + (data.error || 'Unknown error'));
         }
