@@ -239,14 +239,30 @@ app.get('/api/admin/contacts', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Update contact (handles both actionRemark and attendedStatus)
 app.put('/api/admin/contacts/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { actionRemark } = req.body;
+    const { actionRemark, attendedStatus } = req.body;
+    const updateData = {};
+    
+    if (actionRemark !== undefined) {
+      updateData.actionRemark = actionRemark;
+    }
+    
+    if (attendedStatus === 'marked' || attendedStatus === 'unmarked') {
+      updateData.attendedStatus = attendedStatus;
+    }
+    
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
-      { actionRemark },
+      updateData,
       { new: true }
     );
+    
     if (!contact) return res.status(404).json({ error: 'Contact not found' });
     res.json(contact);
   } catch (err) {
@@ -318,14 +334,15 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'Please enter a valid phone number (10–15 digits).' });
     }
 
-    // Save to MongoDB with IP address
+    // Save to MongoDB with IP address - CORRECT FIELD NAME
     const contact = new Contact({ 
       name, 
       email, 
       phone, 
       interest, 
       message,
-      ipAddress: ipAddress.toString()
+      ipAddress: ipAddress.toString(),
+      attendedStatus: 'unmarked' 
     });
     await contact.save();
 
@@ -364,7 +381,7 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// Fallback route
+// Fallback route - MUST be LAST
 app.get('/*splat', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });

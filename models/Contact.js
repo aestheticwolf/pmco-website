@@ -8,7 +8,8 @@ const contactSchema = new mongoose.Schema({
   interest: { type: String, required: true },
   message: { type: String, required: true },
   actionRemark: { type: String, default: '' },
-  ipAddress: { type: String, default: '' },  
+  ipAddress: { type: String, default: '' },
+  attendedStatus: { type: String, default: 'unmarked' },
   submittedAt: { type: Date, default: Date.now }
 });
 

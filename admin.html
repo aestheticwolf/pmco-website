@@ -410,45 +410,64 @@
       `).join('');
     }
 
-    function renderContacts(contacts) {
-      const list = document.getElementById('contactsList');
-      if (contacts.length === 0) {
-        list.innerHTML = '<p>No enquiries yet.</p>';
-        return;
-      }
+function renderContacts(contacts) {
+  const list = document.getElementById('contactsList');
+  if (contacts.length === 0) {
+    list.innerHTML = '<p>No enquiries yet.</p>';
+    return;
+  }
 
-      list.innerHTML = contacts.map(c => `
-        <div class="item-card">
-          <div class="contact-info">
-            <strong>${c.name}</strong> (${c.email})<br>
-            <small>${c.message.substring(0, 60)}${c.message.length > 60 ? '...' : ''}</small><br>
-            <small>IP: ${c.ipAddress || 'N/A'} | ${new Date(c.submittedAt).toLocaleDateString()}</small>
-          </div>
-          <div class="remark-section">
-            <textarea 
-              id="remark-${c._id}" 
-              placeholder="Add action remark..." 
-              rows="2"
-              style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
-            >${c.actionRemark || ''}</textarea>
-            <div style="margin-top: 5px; display: flex; gap: 8px;">
-              <button 
-                onclick="saveRemark('${c._id}')" 
-                style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer;"
-              >
-                ${c.actionRemark ? 'Update Remark' : 'Save Remark'}
-              </button>
-              <button 
-                onclick="deleteContact('${c._id}')" 
-                style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
+  list.innerHTML = contacts.map(c => `
+    <div class="item-card" style="${(c.attendedStatus === 'marked') ? 'border-left: 4px solid #28a745; background: #f0fff4;' : ''}">
+      <div class="contact-info">
+        <strong>${c.name}</strong> (${c.email})<br>
+        <small>${c.message.substring(0, 60)}${c.message.length > 60 ? '...' : ''}</small><br>
+        <small>IP: ${c.ipAddress || 'N/A'} | ${new Date(c.submittedAt).toLocaleDateString()}</small>
+      </div>
+      <div class="remark-section" style="display: flex; flex-direction: column; gap: 10px; min-width: 200px;">
+        <div style="display: flex; align-items: center; gap: 8px; background: ${(c.attendedStatus === 'marked') ? '#d4edda' : '#f8d7da'}; padding: 8px; border-radius: 4px;">
+          <span style="font-size: 14px; font-weight: bold; color: ${(c.attendedStatus === 'marked') ? '#155724' : '#721c24'};">
+            ${c.attendedStatus === 'marked' ? '✅ Marked as Attended' : '❌ Not Attended'}
+          </span>
+          <button 
+            onclick="markAsAttended('${c._id}', '${c.attendedStatus}')" 
+            style="padding: 5px 10px; background: ${(c.attendedStatus === 'marked') ? '#6c757d' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;"
+            ${(c.attendedStatus === 'marked') ? 'disabled' : ''}
+          >
+            ${c.attendedStatus === 'marked' ? '✓ Attended' : 'Mark Attended'}
+          </button>
+          <button 
+            onclick="unmarkAsAttended('${c._id}', '${c.attendedStatus}')" 
+            style="padding: 5px 10px; background: ${(c.attendedStatus === 'unmarked') ? '#6c757d' : '#dc3545'}; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;"
+            ${(c.attendedStatus === 'unmarked') ? 'disabled' : ''}
+          >
+            ${c.attendedStatus === 'unmarked' ? '× Unattended' : 'Unmark'}
+          </button>
         </div>
-      `).join('');
-    }
+        <textarea 
+          id="remark-${c._id}" 
+          placeholder="Add action remark..." 
+          rows="2"
+          style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;"
+        >${c.actionRemark || ''}</textarea>
+        <div style="display: flex; gap: 8px;">
+          <button 
+            onclick="saveRemark('${c._id}')" 
+            style="padding: 5px 10px; background: #2980b9; color: white; border: none; border-radius: 4px; cursor: pointer;"
+          >
+            ${c.actionRemark ? 'Update Remark' : 'Save Remark'}
+          </button>
+          <button 
+            onclick="deleteContact('${c._id}')" 
+            style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
 
     async function addProduct() {
       const title = document.getElementById('prodTitle').value.trim();
@@ -543,7 +562,6 @@ if (!prodImageUrlInput) {
       const title = document.getElementById(`editTitle-${id}`).value.trim();
       const desc = document.getElementById(`editDesc-${id}`).value.trim();
       const img = document.getElementById(`editImage-${id}`).value.trim();
-      const msgEl = document.getElementById('prodMsg');
 
       if (!title || !desc || !img) {
         showToast('All fields required', 'error');
@@ -707,6 +725,56 @@ if (!prodImageUrlInput) {
       } catch (err) {
         showToast('Network error', 'error');
         console.error(err);
+      }
+    }
+
+    async function markAsAttended(id, currentStatus) {
+      if (currentStatus === 'marked') return; // Already marked
+      try {
+        const res = await fetch(`/api/admin/contacts/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ attendedStatus: 'marked' })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast('✅ Marked as attended!', 'success');
+          loadDashboard();
+        } else {
+          showToast(data.error || 'Failed to update status', 'error');
+        }
+      } catch (err) {
+        console.error('Mark attended error:', err);
+        showToast('Network error', 'error');
+      }
+    }
+
+    async function unmarkAsAttended(id, currentStatus) {
+      if (currentStatus === 'unmarked') return; // Already unmarked
+      try {
+        const res = await fetch(`/api/admin/contacts/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authToken
+          },
+          body: JSON.stringify({ attendedStatus: 'unmarked' })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showToast('🔄 Unmarked as attended', 'info');
+          loadDashboard();
+        } else {
+          showToast(data.error || 'Failed to update status', 'error');
+        }
+      } catch (err) {
+        console.error('Unmark attended error:', err);
+        showToast('Network error', 'error');
       }
     }
 
