@@ -726,7 +726,7 @@
           <div class="remark-section">
             <div class="status-badge ${(c.attendedStatus === 'marked') ? 'status-attended' : 'status-unattended'}">
               <i class="fas ${(c.attendedStatus === 'marked') ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-              ${c.attendedStatus === 'marked' ? 'Marked as Attended' : 'Not Attended'}
+              ${c.attendedStatus === 'marked' ? 'Attended' : 'Not Attended'}
             </div>
             
             <div class="form-group">
@@ -1045,7 +1045,7 @@
 
         const data = await res.json();
         if (res.ok) {
-          showToast('✅ Marked as attended successfully!', 'success');
+          showToast('✅ Attended successfully!', 'success');
           loadDashboard();
         } else {
           showToast(data.error || 'Failed to update status', 'error');
@@ -1070,7 +1070,7 @@
 
         const data = await res.json();
         if (res.ok) {
-          showToast('🔄 Unmarked as attended successfully!', 'info');
+          showToast('🔄 Unattended!', 'info');
           loadDashboard();
         } else {
           showToast(data.error || 'Failed to update status', 'error');
